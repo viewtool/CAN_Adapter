@@ -28,6 +28,11 @@
 #define VCI_USBCAN1		3
 #define VCI_USBCAN2		4
 
+#ifdef WIN32
+#define SPRINTF(a) printf a
+#else
+#define SPRINTF(a)
+#endif 
 
 //CAN error code
 #define	ERR_CAN_OVERFLOW			0x0001	//CAN controller internal FIFO overflow
@@ -62,13 +67,13 @@ typedef  struct  _VCI_BOARD_INFO{
 	uint16_t	irq_Num;			//interrupt number used by board
 	uint8_t	can_Num;			//CAN channel number
 	int8_t	str_Serial_Num[20];	//CAN board serial number
-	int8_t	str_hw_Type[40];	//string for hardware type, for example: ¡°USBCAN V1.00\0¡±(note: include string null end'\0').
+	int8_t	str_hw_Type[40];	//string for hardware type, for example: ï¿½ï¿½USBCAN V1.00\0ï¿½ï¿½(note: include string null end'\0').
 	uint16_t	Reserved[4];		//reserved
 } VCI_BOARD_INFO,*PVCI_BOARD_INFO; 
 
 //1.Ginkgo serial board data type
 typedef  struct  _VCI_BOARD_INFO_EX{
-	uint8_t		ProductName[32];	//hardware name,for example: ¡°Ginkgo-CAN-Adapter\0¡±(note: include string null end'\0¡¯)
+	uint8_t		ProductName[32];	//hardware name,for example: ï¿½ï¿½Ginkgo-CAN-Adapter\0ï¿½ï¿½(note: include string null end'\0ï¿½ï¿½)
 	uint8_t		FirmwareVersion[4];	//firmware version
 	uint8_t		HardwareVersion[4];	//hardware version
 	uint8_t		SerialNumber[12];	//adapter serial number
@@ -78,7 +83,7 @@ typedef  struct  _VCI_BOARD_INFO_EX{
 typedef  struct  _VCI_CAN_OBJ{
 	uint32_t	ID;			//text ID.
 	uint32_t	TimeStamp;	//timestamp of the frame arriving, started from initialization of CAN controller
-	uint8_t	TimeFlag;	// if using timestamp, 1: use TimeStamp, 0£ºnot use. TimeFlag and TimeStamp is available when the frame is received frame
+	uint8_t	TimeFlag;	// if using timestamp, 1: use TimeStamp, 0ï¿½ï¿½not use. TimeFlag and TimeStamp is available when the frame is received frame
 	uint8_t	SendType;	//send frame type. 0: normal send, 1: single send, 2: self send/receive, 3: single self send/receive, only available when 
 						//the frame is send frame.(when device type is EG20T-CAN, send type will be set at VCI_InitCan and it's invalid set herein
 						//When set to self send/receive mode, EG20T-CAN can not receive from bus, only can receive from itself)
@@ -146,7 +151,7 @@ typedef struct _VCI_FILTER_CONFIG{
 	uint8_t	Enable;			//filter enable, 1: enable, 0: disable
 	uint8_t	FilterIndex;	//filter index, range: 0~13
 	uint8_t	FilterMode;		//filter mode, 0: mask bit, 1: id list
-	uint8_t	ExtFrame;		//filter frame flag, 1: the frame to be filtered is extended frame, 0£ºthe frame to be filtered is standard frame
+	uint8_t	ExtFrame;		//filter frame flag, 1: the frame to be filtered is extended frame, 0ï¿½ï¿½the frame to be filtered is standard frame
 	uint32_t	ID_Std_Ext;		//verification code ID
 	uint32_t	ID_IDE;			//verification code IDE
 	uint32_t	ID_RTR;			//verification code RTR
@@ -155,6 +160,14 @@ typedef struct _VCI_FILTER_CONFIG{
 	uint32_t	MASK_RTR;		//Mask code RTR, only available when filter mode set to mask bit mode
 	uint32_t	Reserved;		//reserved
 } VCI_FILTER_CONFIG,*PVCI_FILTER_CONFIG;
+
+typedef  const struct {
+  int BAUD_RATE; 
+  unsigned char   SJW;
+  unsigned char   BS1;
+  unsigned char   BS2;
+  unsigned short  PreScale;
+} s_CAN_BaudRate;
 
 typedef void(WINAPI *PVCI_RECEIVE_CALLBACK)(uint32_t DevIndex,uint32_t CANIndex,uint32_t Len);
 
